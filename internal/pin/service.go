@@ -8,6 +8,8 @@ import (
 
 const digits = "0123456789"
 
+var ErrInvalidLength = errors.New("invalid length, supported values: 4/6/8")
+
 type Service struct{}
 
 func NewService() *Service {
@@ -15,8 +17,8 @@ func NewService() *Service {
 }
 
 func (s *Service) Generate(length int) (string, error) {
-	if length != 4 && length != 6 && length != 8 {
-		return "", errors.New("invalid length, supported values: 4/6/8")
+	if !isValidLength(length) {
+		return "", ErrInvalidLength
 	}
 
 	bytes := make([]byte, length)
@@ -31,4 +33,13 @@ func (s *Service) Generate(length int) (string, error) {
 	}
 
 	return string(bytes), nil
+}
+
+func isValidLength(length int) bool {
+	switch length {
+	case 4, 6, 8:
+		return true
+	default:
+		return false
+	}
 }

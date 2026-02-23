@@ -1,25 +1,33 @@
 package pin
 
-import "testing"
+import (
+	"errors"
+	"testing"
+)
 
 func TestGenerateValidLength(t *testing.T) {
 	s := NewService()
 
-	pin, err := s.Generate(6)
-	if err != nil {
-		t.Fatalf("unexpected error: %v", err)
-	}
-
-	if len(pin) != 6 {
-		t.Fatalf("expected length 6, got %d", len(pin))
+	testCases := []int{4, 6, 8}
+	for _, length := range testCases {
+		pin, err := s.Generate(length)
+		if err != nil {
+			t.Fatalf("unexpected error for length %d: %v", length, err)
+		}
+		if len(pin) != length {
+			t.Fatalf("expected length %d, got %d", length, len(pin))
+		}
 	}
 }
 
 func TestGenerateInvalidLength(t *testing.T) {
 	s := NewService()
 
-	_, err := s.Generate(5)
-	if err == nil {
-		t.Fatalf("expected error for invalid length")
+	testCases := []int{0, 3, 5, 7, 9}
+	for _, length := range testCases {
+		_, err := s.Generate(length)
+		if !errors.Is(err, ErrInvalidLength) {
+			t.Fatalf("expected ErrInvalidLength for length %d, got %v", length, err)
+		}
 	}
 }
