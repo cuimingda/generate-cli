@@ -3,6 +3,7 @@
 ## Install
 
 ```sh
+go install ./cmd/gen
 go install github.com/cuimingda/generate-cli/cmd/gen@latest
 ```
 
@@ -11,4 +12,6 @@ go install github.com/cuimingda/generate-cli/cmd/gen@latest
 ```sh
 go test -cover ./internal/...
 go test ./... -cover
+go test ./... -coverprofile=coverage.out
+go tool cover -html=coverage.out
 ```
