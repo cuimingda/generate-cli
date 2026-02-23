@@ -1,7 +1,9 @@
 package pin
 
 import (
+	"crypto/rand"
 	"errors"
+	"io"
 	"testing"
 )
 
@@ -30,4 +32,25 @@ func TestGenerateInvalidLength(t *testing.T) {
 			t.Fatalf("expected ErrInvalidLength for length %d, got %v", length, err)
 		}
 	}
+}
+
+func TestGenerateRandomReadError(t *testing.T) {
+	s := NewService()
+
+	oldReader := rand.Reader
+	rand.Reader = errorReader{}
+	defer func() {
+		rand.Reader = oldReader
+	}()
+
+	_, err := s.Generate(6)
+	if !errors.Is(err, io.ErrUnexpectedEOF) {
+		t.Fatalf("expected io.ErrUnexpectedEOF, got %v", err)
+	}
+}
+
+type errorReader struct{}
+
+func (errorReader) Read(_ []byte) (int, error) {
+	return 0, io.ErrUnexpectedEOF
 }
