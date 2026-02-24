@@ -14,6 +14,7 @@ func NewRootCmd() *cobra.Command {
 	}
 
 	rootCmd.AddCommand(NewPinCmd())
+	rootCmd.AddCommand(NewSlugCmd())
 
 	return rootCmd
 }
