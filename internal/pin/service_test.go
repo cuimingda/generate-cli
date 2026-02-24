@@ -12,12 +12,34 @@ func TestGenerateValidLength(t *testing.T) {
 
 	testCases := []int{4, 6, 8}
 	for _, length := range testCases {
-		pin, err := s.Generate(length)
+		pins, err := s.Generate(length)
 		if err != nil {
 			t.Fatalf("unexpected error for length %d: %v", length, err)
 		}
-		if len(pin) != length {
-			t.Fatalf("expected length %d, got %d", length, len(pin))
+		if len(pins) != 10 {
+			t.Fatalf("expected default count 10, got %d", len(pins))
+		}
+		for _, generated := range pins {
+			if len(generated) != length {
+				t.Fatalf("expected length %d, got %d", length, len(generated))
+			}
+		}
+	}
+}
+
+func TestGenerateCustomCount(t *testing.T) {
+	s := NewService()
+
+	pins, err := s.Generate(6, 3)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if len(pins) != 3 {
+		t.Fatalf("expected 3 pins, got %d", len(pins))
+	}
+	for _, generated := range pins {
+		if len(generated) != 6 {
+			t.Fatalf("expected length 6, got %d", len(generated))
 		}
 	}
 }
@@ -43,7 +65,7 @@ func TestGenerateRandomReadError(t *testing.T) {
 		rand.Reader = oldReader
 	}()
 
-	_, err := s.Generate(6)
+	_, err := s.Generate(6, 1)
 	if !errors.Is(err, io.ErrUnexpectedEOF) {
 		t.Fatalf("expected io.ErrUnexpectedEOF, got %v", err)
 	}

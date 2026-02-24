@@ -16,23 +16,32 @@ func NewService() *Service {
 	return &Service{}
 }
 
-func (s *Service) Generate(length int) (string, error) {
+func (s *Service) Generate(length int, count ...int) ([]string, error) {
 	if !isValidLength(length) {
-		return "", ErrInvalidLength
+		return nil, ErrInvalidLength
 	}
 
-	bytes := make([]byte, length)
+	total := 10
+	if len(count) > 0 && count[0] > 0 {
+		total = count[0]
+	}
+
+	results := make([]string, 0, total)
 	max := big.NewInt(int64(len(digits)))
 
-	for i := range bytes {
-		n, err := rand.Int(rand.Reader, max)
-		if err != nil {
-			return "", err
+	for range total {
+		bytes := make([]byte, length)
+		for i := range bytes {
+			n, err := rand.Int(rand.Reader, max)
+			if err != nil {
+				return nil, err
+			}
+			bytes[i] = digits[n.Int64()]
 		}
-		bytes[i] = digits[n.Int64()]
+		results = append(results, string(bytes))
 	}
 
-	return string(bytes), nil
+	return results, nil
 }
 
 func isValidLength(length int) bool {

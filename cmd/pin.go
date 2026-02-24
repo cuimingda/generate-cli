@@ -6,6 +6,7 @@ import (
 )
 
 var pinLength int
+var pinCount int
 
 func NewPinCmd() *cobra.Command {
 	cmd := &cobra.Command{
@@ -14,16 +15,19 @@ func NewPinCmd() *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			service := pin.NewService()
 
-			result, err := service.Generate(pinLength)
+			result, err := service.Generate(pinLength, pinCount)
 			if err != nil {
 				return err
 			}
 
-			cmd.Println(result)
+			for _, item := range result {
+				cmd.Println(item)
+			}
 			return nil
 		},
 	}
 
 	cmd.Flags().IntVar(&pinLength, "length", 6, "PIN length, supported values: 4/6/8")
+	cmd.Flags().IntVar(&pinCount, "count", 10, "Number of PIN values to generate")
 	return cmd
 }
